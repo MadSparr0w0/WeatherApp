@@ -4,9 +4,9 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
 
-@Entity(tableName = "cities") // Указываем имя таблицы в БД
+@Entity(tableName = "cities")
 public class City {
-    @PrimaryKey(autoGenerate = true) // ID будет генерироваться автоматически
+    @PrimaryKey(autoGenerate = true)
     private int id;
 
     @ColumnInfo(name = "city_name")
@@ -18,7 +18,6 @@ public class City {
     @ColumnInfo(name = "is_current")
     private boolean isCurrent;
 
-    // Конструктор (Room также может использовать другие)
     public City(String name, double latitude, double longitude, boolean isCurrent) {
         this.name = name;
         this.latitude = latitude;
@@ -26,7 +25,6 @@ public class City {
         this.isCurrent = isCurrent;
     }
 
-    // Геттеры и сеттеры для ВСЕХ полей (включая id)
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

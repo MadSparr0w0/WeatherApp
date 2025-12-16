@@ -23,7 +23,6 @@
         android:alignmentMode="alignMargins"
         android:columnOrderPreserved="false">
 
-        <!-- Давление -->
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="100dp"
@@ -138,7 +137,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Видимость -->
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="100dp"

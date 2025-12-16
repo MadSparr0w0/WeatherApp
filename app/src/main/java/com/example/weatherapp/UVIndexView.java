@@ -52,14 +52,11 @@ public class UVIndexView extends View {
         int centerX = width / 2;
         int centerY = height / 2;
 
-        // Фоновый круг
         canvas.drawCircle(centerX, centerY, radius, backgroundPaint);
 
-        // Заполненная часть
         float sweepAngle = (float) uvIndex / maxUV * 360f;
         RectF rect = new RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 
-        // Устанавливаем цвет в зависимости от УФ-индекса
         if (uvIndex <= 2) {
             circlePaint.setColor(Color.GREEN);
         } else if (uvIndex <= 5) {

@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="250dp"
     android:layout_marginBottom="24dp"
     app:cardBackgroundColor="@color/card_background"
     app:cardCornerRadius="12dp"
@@ -23,23 +23,29 @@
             android:padding="16dp"
             android:paddingBottom="8dp"/>
 
-        <ImageView
-            android:id="@+id/iv_precipitation_map"
+        <WebView
+            android:id="@+id/webview_map"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_map_placeholder"
-            android:contentDescription="Карта осадков"/>
+            android:layout_weight="1"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Нажмите для обновления"
+            android:text="Нажмите, чтобы обновить данные"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
             android:gravity="center"
             android:padding="8dp"/>
+
+        <ImageView
+            android:id="@+id/iv_precipitation_map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_map_placeholder"
+        android:contentDescription="Карта осадков"/>
 
     </LinearLayout>
 

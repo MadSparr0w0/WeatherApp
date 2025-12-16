@@ -52,14 +52,11 @@ public class HumidityView extends View {
         int centerX = width / 2;
         int centerY = height / 2;
 
-        // Фоновый круг
         canvas.drawCircle(centerX, centerY, radius, backgroundPaint);
 
-        // Заполненная часть
-        float sweepAngle = humidity * 3.6f; // 360° / 100%
+        float sweepAngle = humidity * 3.6f;
         RectF rect = new RectF(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 
-        // Градиент от синего к голубому
         Shader shader = new SweepGradient(centerX, centerY,
                 new int[] {Color.BLUE, Color.CYAN, Color.BLUE}, null);
         circlePaint.setShader(shader);
