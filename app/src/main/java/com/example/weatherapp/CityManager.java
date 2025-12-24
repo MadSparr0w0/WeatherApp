@@ -1,117 +1,200 @@
 package com.example.weatherapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CityManager {
-    private List<City> cities = new ArrayList<>();
-    private static CityManager instance;
+    private static final String TAG = "CityManager";
+    private static final String API_KEY = "9e8a5bed949526c8c672d5ae11bc567f";
+    private static final String GEO_API_URL = "https://api.openweathermap.org/geo/1.0/direct?q=%s&limit=10&appid=%s";
+    private static final String REVERSE_GEO_API_URL = "http://api.openweathermap.org/geo/1.0/reverse?lat=%f&lon=%f&limit=1&appid=%s";
 
-    private CityManager() {
-        cities.add(new City("Батайск", 47.1397, 39.7518, true));
-        cities.add(new City("Москва", 55.7558, 37.6173, false));
-        cities.add(new City("Санкт-Петербург", 59.9343, 30.3351, false));
-        cities.add(new City("Новосибирск", 55.0084, 82.9357, false));
-        cities.add(new City("Екатеринбург", 56.8389, 60.6057, false));
-        cities.add(new City("Нижний Новгород", 56.3269, 44.0065, false));
-        cities.add(new City("Казань", 55.7964, 49.1089, false));
-        cities.add(new City("Челябинск", 55.1644, 61.4368, false));
-        cities.add(new City("Омск", 54.9924, 73.3686, false));
-        cities.add(new City("Самара", 53.1959, 50.1002, false));
-        cities.add(new City("Ростов-на-Дону", 47.2225, 39.7188, false));
-        cities.add(new City("Уфа", 54.7351, 55.9587, false));
-        cities.add(new City("Красноярск", 56.0153, 92.8932, false));
-        cities.add(new City("Воронеж", 51.6720, 39.1843, false));
-        cities.add(new City("Пермь", 58.0105, 56.2294, false));
-        cities.add(new City("Волгоград", 48.7080, 44.5133, false));
-        cities.add(new City("Краснодар", 45.0355, 38.9753, false));
-        cities.add(new City("Саратов", 51.5336, 46.0343, false));
-        cities.add(new City("Тюмень", 57.1530, 65.5343, false));
-        cities.add(new City("Тольятти", 53.5088, 49.4192, false));
-        cities.add(new City("Ижевск", 56.8527, 53.2115, false));
-        cities.add(new City("Барнаул", 53.3477, 83.7798, false));
-        cities.add(new City("Ульяновск", 54.3080, 48.3749, false));
-        cities.add(new City("Иркутск", 52.2864, 104.2807, false));
-        cities.add(new City("Хабаровск", 48.4802, 135.0719, false));
-        cities.add(new City("Ярославль", 57.6261, 39.8845, false));
-        cities.add(new City("Владивосток", 43.1155, 131.8855, false));
-        cities.add(new City("Махачкала", 42.9849, 47.5048, false));
-        cities.add(new City("Томск", 56.4977, 84.9744, false));
-        cities.add(new City("Оренбург", 51.7682, 55.0974, false));
-        cities.add(new City("Кемерово", 55.3547, 86.0873, false));
-        cities.add(new City("Новокузнецк", 53.7865, 87.1552, false));
-        cities.add(new City("Рязань", 54.6294, 39.7396, false));
-        cities.add(new City("Астрахань", 46.3479, 48.0336, false));
-        cities.add(new City("Набережные Челны", 55.7436, 52.3959, false));
-        cities.add(new City("Пенза", 53.1951, 45.0183, false));
-        cities.add(new City("Липецк", 52.6088, 39.5992, false));
-        cities.add(new City("Киров", 58.6036, 49.6680, false));
-        cities.add(new City("Чебоксары", 56.1463, 47.2511, false));
-        cities.add(new City("Тула", 54.1931, 37.6173, false));
-        cities.add(new City("Калининград", 54.7104, 20.4522, false));
-        cities.add(new City("Брянск", 53.2436, 34.3642, false));
-        cities.add(new City("Курск", 51.7304, 36.1926, false));
-        cities.add(new City("Магнитогорск", 53.4117, 58.9844, false));
-        cities.add(new City("Тверь", 56.8584, 35.9000, false));
-        cities.add(new City("Ставрополь", 45.0445, 41.9691, false));
-        cities.add(new City("Севастополь", 44.6166, 33.5254, false));
-        cities.add(new City("Симферополь", 44.9521, 34.1024, false));
+    private City currentCity;
+    private static CityManager instance;
+    private SharedPreferences prefs;
+    private Context context;
+
+    private CityManager(Context context) {
+        this.context = context;
+        prefs = context.getSharedPreferences("city_prefs", Context.MODE_PRIVATE);
+        loadCurrentCityFromPrefs();
     }
 
-    public static CityManager getInstance() {
+    public static synchronized CityManager getInstance(Context context) {
         if (instance == null) {
-            instance = new CityManager();
+            instance = new CityManager(context);
         }
         return instance;
     }
 
-    public List<City> getAllCities() {
-        return new ArrayList<>(cities);
+    public void searchCitiesFromApi(String query, OnCitiesLoadedListener listener) {
+        new Thread(() -> {
+            try {
+                String encodedQuery = URLEncoder.encode(query, "UTF-8");
+                String urlString = String.format(GEO_API_URL, encodedQuery, API_KEY);
+                URL url = new URL(urlString);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(10000);
+                connection.setReadTimeout(10000);
+
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    reader.close();
+
+                    JSONArray jsonArray = new JSONArray(response.toString());
+                    List<City> cities = new ArrayList<>();
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject cityJson = jsonArray.getJSONObject(i);
+                        String name = cityJson.getString("name");
+                        String country = cityJson.optString("country", "");
+                        String state = cityJson.optString("state", "");
+                        double lat = cityJson.getDouble("lat");
+                        double lon = cityJson.getDouble("lon");
+
+                        StringBuilder displayName = new StringBuilder(name);
+                        if (!state.isEmpty()) {
+                            displayName.append(", ").append(state);
+                        }
+                        if (!country.isEmpty()) {
+                            displayName.append(", ").append(country);
+                        }
+
+                        City city = new City(displayName.toString(), lat, lon, false);
+                        cities.add(city);
+                    }
+
+                    if (listener != null) {
+                        listener.onCitiesLoaded(cities);
+                    }
+                } else {
+                    if (listener != null) {
+                        listener.onError("HTTP ошибка: " + connection.getResponseCode());
+                    }
+                }
+                connection.disconnect();
+            } catch (Exception e) {
+                Log.e(TAG, "Ошибка при поиске городов: " + e.getMessage(), e);
+                if (listener != null) {
+                    listener.onError(e.getMessage());
+                }
+            }
+        }).start();
     }
 
-    public List<City> searchCities(String query) {
-        List<City> result = new ArrayList<>();
-        String lowerQuery = query.toLowerCase();
+    public void getCityByCoordinates(double lat, double lon, OnCityFoundListener listener) {
+        new Thread(() -> {
+            try {
+                String urlString = String.format(REVERSE_GEO_API_URL, lat, lon, API_KEY);
+                URL url = new URL(urlString);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(10000);
+                connection.setReadTimeout(10000);
 
-        for (City city : cities) {
-            if (city.getName().toLowerCase().contains(lowerQuery)) {
-                result.add(city);
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    reader.close();
+
+                    JSONArray jsonArray = new JSONArray(response.toString());
+                    if (jsonArray.length() > 0) {
+                        JSONObject cityJson = jsonArray.getJSONObject(0);
+                        String name = cityJson.getString("name");
+                        String country = cityJson.optString("country", "");
+                        String state = cityJson.optString("state", "");
+                        double latitude = cityJson.getDouble("lat");
+                        double longitude = cityJson.getDouble("lon");
+
+                        StringBuilder displayName = new StringBuilder(name);
+                        if (!state.isEmpty()) {
+                            displayName.append(", ").append(state);
+                        }
+                        if (!country.isEmpty()) {
+                            displayName.append(", ").append(country);
+                        }
+
+                        City city = new City(displayName.toString(), latitude, longitude, true);
+                        setCurrentCity(city);
+
+                        if (listener != null) {
+                            listener.onCityFound(city);
+                        }
+                    } else {
+                        if (listener != null) {
+                            listener.onError("Город не найден по координатам");
+                        }
+                    }
+                } else {
+                    if (listener != null) {
+                        listener.onError("HTTP ошибка: " + connection.getResponseCode());
+                    }
+                }
+                connection.disconnect();
+            } catch (Exception e) {
+                Log.e(TAG, "Ошибка при получении города по координатам: " + e.getMessage(), e);
+                if (listener != null) {
+                    listener.onError(e.getMessage());
+                }
             }
+        }).start();
+    }
+
+    private void loadCurrentCityFromPrefs() {
+        String name = prefs.getString("current_city_name", null);
+        if (name != null) {
+            double lat = Double.longBitsToDouble(prefs.getLong("current_city_lat", 0));
+            double lon = Double.longBitsToDouble(prefs.getLong("current_city_lon", 0));
+            currentCity = new City(name, lat, lon, true);
         }
-        return result;
+    }
+
+    private void saveCurrentCityToPrefs(City city) {
+        if (city == null) return;
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("current_city_name", city.getName());
+        editor.putLong("current_city_lat", Double.doubleToRawLongBits(city.getLatitude()));
+        editor.putLong("current_city_lon", Double.doubleToRawLongBits(city.getLongitude()));
+        editor.apply();
     }
 
     public City getCurrentCity() {
-        for (City city : cities) {
-            if (city.isCurrent()) {
-                return city;
-            }
-        }
-        return cities.get(0);
+        return currentCity;
     }
 
-    public void setCurrentCity(City selectedCity) {
-        for (City city : cities) {
-            city.setCurrent(false);
-        }
-        for (City city : cities) {
-            if (city.getName().equals(selectedCity.getName()) &&
-                    city.getLatitude() == selectedCity.getLatitude()) {
-                city.setCurrent(true);
-                break;
-            }
-        }
+    public void setCurrentCity(City city) {
+        if (city == null) return;
+        this.currentCity = city;
+        saveCurrentCityToPrefs(city);
     }
 
-    public void addCity(City city) {
-        cities.add(city);
+    public interface OnCitiesLoadedListener {
+        void onCitiesLoaded(List<City> cities);
+        void onError(String error);
     }
 
-    public void removeCity(City city) {
-        cities.removeIf(c ->
-                c.getName().equals(city.getName()) &&
-                        c.getLatitude() == city.getLatitude() &&
-                        c.getLongitude() == city.getLongitude()
-        );
+    public interface OnCityFoundListener {
+        void onCityFound(City city);
+        void onError(String error);
     }
 }

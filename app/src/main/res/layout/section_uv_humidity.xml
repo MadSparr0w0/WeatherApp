@@ -47,7 +47,7 @@
                     android:id="@+id/tv_uv_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="9"
+                    android:text=""
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -57,7 +57,7 @@
                     android:id="@+id/tv_uv_level"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Низкий"
+                    android:text=""
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"/>
 
@@ -65,7 +65,7 @@
                     android:id="@+id/tv_uv_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Низкий до конца дня"
+                    android:text=""
                     android:textColor="@color/text_secondary"
                     android:textSize="10sp"
                     android:maxLines="2"
@@ -92,24 +92,17 @@
                     android:id="@+id/tv_humidity_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="66%"
+                    android:text=""
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp"/>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Влажность"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"/>
-
-                <TextView
                     android:id="@+id/tv_humidity_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Выше, чем вчера"
+                    android:text=""
                     android:textColor="@color/text_secondary"
                     android:textSize="10sp"
                     android:maxLines="2"

@@ -29,6 +29,15 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
+        <ImageView
+            android:id="@+id/iv_precipitation_map"
+            android:layout_width="match_parent"
+            android:layout_height="168dp"
+            android:layout_weight="1"
+            android:contentDescription="Карта осадков"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_map_placeholder" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,16 +46,6 @@
             android:textSize="12sp"
             android:gravity="center"
             android:padding="8dp"/>
-
-        <ImageView
-            android:id="@+id/iv_precipitation_map"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_map_placeholder"
-        android:contentDescription="Карта осадков"/>
-
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

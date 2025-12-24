@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="ПН"
+            android:text=""
             android:textColor="@color/text_primary"
             android:textSize="14sp"/>
 
@@ -34,7 +34,7 @@
             android:id="@+id/tv_precipitation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="4%"
+            android:text=""
             android:textColor="@color/primary_blue"
             android:textSize="12sp"
             android:layout_marginEnd="16dp"/>
@@ -43,7 +43,7 @@
             android:id="@+id/tv_temp_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-1°"
+            android:text=""
             android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:layout_marginEnd="8dp"/>
@@ -52,7 +52,7 @@
             android:id="@+id/tv_temp_night"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-5°"
+            android:text=""
             android:textColor="@color/text_secondary"
             android:textSize="14sp"/>
 

@@ -67,19 +67,12 @@ public class WeatherNotificationService extends Service {
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private void showWeatherNotification() {
-        String city = CityManager.getInstance().getCurrentCity().getName();
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_cloud)
                 .setContentTitle("Прогноз погоды на сегодня")
-                .setContentText(city + ": -2°, значительная облачность")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(city + "\n" +
-                                "Сейчас: -2°, ощущается как -5°\n" +
-                                "Днем: до -1°, ночью: до -4°\n" +
-                                "Ветер: 9 км/ч"))
                 .addAction(R.drawable.ic_location, "Открыть",
                         PendingIntent.getActivity(this, 0,
                                 new Intent(this, MainActivity.class),

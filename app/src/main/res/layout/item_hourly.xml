@@ -19,7 +19,7 @@
             android:id="@+id/tv_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="19:00"
+            android:text=""
             android:textColor="@color/text_primary"
             android:textSize="12sp"/>
 
@@ -34,7 +34,7 @@
             android:id="@+id/tv_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-2°"
+            android:text=""
             android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold"/>
@@ -43,7 +43,7 @@
             android:id="@+id/tv_precipitation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1%"
+            android:text=""
             android:textColor="@color/primary_blue"
             android:textSize="10sp"/>
 
